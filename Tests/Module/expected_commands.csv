@@ -1,0 +1,6 @@
+Name
+"Send-StatsD"
+"Send-DogStatsD"
+"Send-DataDogStatsD"
+"Send-DataDogEvent"
+"Send-DataDogMetric"
