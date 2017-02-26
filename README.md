@@ -1,8 +1,7 @@
 DogStatsD PowerShell module
 ===============================
 
-[![Build status](https://ci.appveyor.com/api/projects/status/kdc6a75b8wludjq6?svg=true)](https://ci.appveyor.com/project/muratiakos/DogStatsD)
-[![Join the chat at https://gitter.im/murati-hu/DogStatsD](https://badges.gitter.im/murati-hu/DogStatsD.svg)](https://gitter.im/murati-hu/DogStatsD?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build status](https://ci.appveyor.com/api/projects/status/bl2wph41xk6r80ey?svg=true)](https://ci.appveyor.com/project/muratiakos/dogstatsd)
 
 DogStatsD module provides a simple way to send events and metrics or other
 messages to [DataDog][datadog] from PowerShell via [DogStatsD][dogstatsd] UDP protocol.
