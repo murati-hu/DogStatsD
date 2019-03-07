@@ -25,6 +25,9 @@ Send-DataDogEvent -Title "Failure Event" -Text 'Error details can come here' -Al
 
 # Send a Histogram metric for an example command duration
 Send-DataDogMetric -Type Histogram -Name 'command.duration' -Value 12 -Tag @("command:my_command_name")
+
+# Send a Gauge metric with value from variable to a given host and port
+Send-DataDogMetric -Type Gauge -Name 'random.value' -Value $randomvalue -ComputerName 192.168.0.1 -Port 8125
 ```
 
 ## Documentation

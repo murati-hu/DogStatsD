@@ -19,6 +19,13 @@
     Priority of the event: normal or low
 .PARAMETER Tag
     List of tag definitions for the metric in "tagname:value" format
+.PARAMETER ComputerName
+    Optional - ComputerName (Hostname or IPaddress) of the
+    target statsd service
+        Default is 127.0.0.1 for localhost
+.PARAMETER Port
+    Optional - Port for the target statsd service
+        Default is 8125
 .EXAMPLE
     Send-DataDogEvent -Title 'My event' -Text 'Add any details' -Tag @("subsytem:my_test_tag1")
 #>
@@ -38,6 +45,10 @@ function Send-DataDogEvent {
         [string]$ComputerName=$(hostname),
 
         [Parameter()]
+        [ValidateRange(1,65535)]
+        [int]$Port=8125,
+
+        [Parameter()]
         [ValidateSet('normal','low')]
         [string]$Priority='normal',
 
@@ -51,5 +62,5 @@ function Send-DataDogEvent {
         [Parameter()]
         [string[]]$Tag=@()
     )
-    Send-StatsD "_e{$($Title.Length),$($Text.Length)}:$Title|$Text|h:$ComputerName|p:$Priority|t:$AlertType|#$([string]::Join(',',$Tag))"
+    Send-StatsD -Data "_e{$($Title.Length),$($Text.Length)}:$Title|$Text|h:$ComputerName|p:$Priority|t:$AlertType|#$([string]::Join(',',$Tag))" -ComputerName $ComputerName -Port $Port
 }
