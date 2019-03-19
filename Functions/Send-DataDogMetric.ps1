@@ -17,8 +17,17 @@
         'Counter','Gauge','Histogram','Timer','Set'
 .PARAMETER Tag
     List of tag definitions for the metric in "tagname:value" format
+.PARAMETER ComputerName
+    Optional - ComputerName (Hostname or IPaddress) of the
+    target statsd service
+        Default is 127.0.0.1 for localhost
+.PARAMETER Port
+    Optional - Port for the target statsd service
+        Default is 8125
 .EXAMPLE
     Send-DataDogMetric -Type Histogram -Name 'command.duration' -Value 12 -Tag @("command:my_command_name")
+.EXAMPLE
+    Send-DataDogMetric -Type Gauge -Name 'random.value' -Value $randomvalue -ComputerName 192.168.0.1 -Port 8125
 #>
 function Send-DataDogMetric {
     [CmdletBinding()]
@@ -40,6 +49,10 @@ function Send-DataDogMetric {
         [string]$ComputerName=$(hostname),
 
         [Parameter()]
+        [ValidateRange(1,65535)]
+        [int]$Port=8125,
+
+        [Parameter()]
         [string]$SampleRate='1',
 
         [Parameter()]
@@ -52,5 +65,5 @@ function Send-DataDogMetric {
         'Set' { $ddType = 's' }
     }
     if (-Not $ddType) { Write-Error "$Type is not a valid metricstype" }
-    Send-StatsD "$($Name):$($Value)|$ddType|@$SampleRate|#$([string]::Join(',',$Tag))"
+    Send-StatsD -Data "$($Name):$($Value)|$ddType|@$SampleRate|#$([string]::Join(',',$Tag))" -ComputerName $ComputerName -Port $Port
 }
