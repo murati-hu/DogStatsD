@@ -50,9 +50,6 @@ function Send-DataDogEvent {
         [string]$Priority='normal',
 
         [Parameter()]
-        [string]$SourceType,
-
-        [Parameter()]
         [ValidateSet('info','success','warning','error')]
         [string]$AlertType='info',
 
@@ -71,7 +68,6 @@ function Send-DataDogEvent {
         $statsdParams.Port = $Port
     }
 
-    $statsdParams
     if ($PSCmdlet.ShouldProcess("Sending DataDog event: $data")) {
         Send-StatsD @statsdParams
     }
