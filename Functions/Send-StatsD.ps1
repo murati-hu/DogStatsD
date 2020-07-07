@@ -27,7 +27,7 @@
 #>
 
 function Send-StatsD {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [ValidateNotNullOrEmpty()]
@@ -36,7 +36,7 @@ function Send-StatsD {
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [string]$ComputerName='127.0.0.1',
-        
+
         [Parameter()]
         [ValidateRange(1,65535)]
         [int]$Port=8125
@@ -50,9 +50,10 @@ function Send-StatsD {
         $bytes=[System.Text.Encoding]::ASCII.GetBytes($Data)
 
         Write-Debug "Sending Encoded Data: `n$bytes"
-        $sent=$UdpClient.Send($bytes,$bytes.length)
-
-        Write-Debug "Data Length sent: $sent"
+        if ($PSCmdlet.ShouldProcess($ComputerName, "Sending $($bytes.Count) bytes.")) {
+            $sent=$UdpClient.Send($bytes,$bytes.length)
+            Write-Debug "Data Length sent: $sent"
+        }
         $UdpClient.Close()
     } catch {
         Write-Error $_
