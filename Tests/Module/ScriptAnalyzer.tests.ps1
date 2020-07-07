@@ -1,9 +1,7 @@
 . (Join-Path $PSScriptRoot '../TestCommon.ps1')
 
 $scriptSources = Get-ChildItem -Path $script:FunctionPath -Filter '*.ps1' -Recurse
-$excludeRuleList = @(
-    'PSUseShouldProcessForStateChangingFunctions'
-)
+$excludeRuleList = @()
 
 if (-Not (Get-Module PSScriptAnalyzer -ListAvailable)) {
     try {
