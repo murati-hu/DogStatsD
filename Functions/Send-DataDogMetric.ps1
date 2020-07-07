@@ -4,7 +4,7 @@
 .DESCRIPTION
     PowerShell cmdlet to send a metric value to DogStatsD
     in a DataDog specific format as per described at:
-     - http://docs.datadoghq.com/guides/dogstatsd/#metrics-1
+    - http://docs.datadoghq.com/guides/dogstatsd/#metrics-1
 
 .PARAMETER Name
     Mandatory Name of the metric
@@ -30,7 +30,7 @@
     Send-DataDogMetric -Type Gauge -Name 'random.value' -Value $randomvalue -ComputerName 192.168.0.1 -Port 8125
 #>
 function Send-DataDogMetric {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
@@ -41,16 +41,16 @@ function Send-DataDogMetric {
         [string]$Value,
 
         [Parameter(Mandatory)]
-        [ValidateSet('Counter','Gauge','Histogram','Timer','Set')]
+        [ValidateSet('Counter','Gauge','Histogram','Timer','Set','Distribution')]
         [string]$Type,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [string]$ComputerName=$(hostname),
+        [string]$ComputerName,
 
         [Parameter()]
         [ValidateRange(1,65535)]
-        [int]$Port=8125,
+        [int]$Port,
 
         [Parameter()]
         [string]$SampleRate='1',
@@ -59,11 +59,25 @@ function Send-DataDogMetric {
         [string[]]$Tag=@()
 
     )
-    $ddType=($Type.ToLower())[0]
-    switch ($Type) {
-        'Timer' { $ddType = 'ms' }
-        'Set' { $ddType = 's' }
+    $ddType = if ($Type -eq 'Timer') {
+        'ms'
     }
-    if (-Not $ddType) { Write-Error "$Type is not a valid metricstype" }
-    Send-StatsD -Data "$($Name):$($Value)|$ddType|@$SampleRate|#$([string]::Join(',',$Tag))" -ComputerName $ComputerName -Port $Port
+    else {
+        $Type.ToLower()[0]
+    }
+
+    $data = "$($Name):$($Value)|$ddType|@$SampleRate|#$([string]::Join(',',$Tag))"
+    $statsdParams = @{
+        Data = $data
+    }
+    if ($ComputerName) {
+        $statsdParams.ComputerName = $ComputerName
+    }
+    if ($Port) {
+        $statsdParams.Port = $Port
+    }
+
+    if ($PSCmdlet.ShouldProcess("Sending DataDog metric: $data")) {
+        Send-StatsD @statsdParams
+    }
 }
