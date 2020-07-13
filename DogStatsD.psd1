@@ -10,7 +10,7 @@
 RootModule = 'DogStatsD.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.1.1'
+ModuleVersion = '1.0.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'a2c94f92-cfb1-4f8f-8cc8-7a77b2122b0d'
