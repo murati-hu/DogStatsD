@@ -42,10 +42,12 @@ function Send-StatsD {
         [int]$Port=8125
     )
 
-    Process {
+    Begin {
         Write-Verbose "Targeting $($ComputerName):$Port UDP endpoint.."
         $UdpClient = New-Object System.Net.Sockets.UdpClient($ComputerName, $Port)
+    }
 
+    Process {
         try {
             Write-Debug "Encoding data:`n$Data"
             $bytes=[System.Text.Encoding]::ASCII.GetBytes($Data)
@@ -55,13 +57,15 @@ function Send-StatsD {
                 $sent=$UdpClient.Send($bytes,$bytes.length)
                 Write-Debug "Data Length sent: $sent"
             }
-            $UdpClient.Close()
-        } catch {
-            Write-Error $_
-        } finally {
-            $UdpClient.Dispose()
         }
+        catch {
+            Write-Error $_
+        }
+    }
 
+    End {
+        $UdpClient.Close()
+        $UdpClient.Dispose()
         $UdpClient = $null
     }
 }

@@ -7,8 +7,7 @@ DogStatsD module provides a simple way to send events and metrics or other
 messages to [DataDog][datadog] from PowerShell via [DogStatsD][dogstatsd] UDP protocol.
 
 ## Installation
-DogStatsD is available via [PowerShellGallery][PowerShellGallery] and via
-[PsGet][psget], so you can simply install it with the following command:
+DogStatsD is available via [PowerShellGallery][PowerShellGallery], so you can simply install it with the following command:
 ```powershell
 Install-Module DogStatsD
 ```
@@ -28,6 +27,16 @@ Send-DataDogMetric -Type Histogram -Name 'command.duration' -Value 12 -Tag @("co
 
 # Send a Gauge metric with value from variable to a given host and port
 Send-DataDogMetric -Type Gauge -Name 'random.value' -Value $randomvalue -ComputerName 192.168.0.1 -Port 8125
+
+# Send lots of Counter metric values via the pipeline
+1..20000 | Send-DataDogMetric -Type Counter -Name 'incrementing.value' -Value { $_ }
+
+# Use the output of another command to provide values for a Gauge metric
+Get-AppStatistics | Send-DataDogMetric -Type Gauge -Name 'appco.active_users' -Value { $_.ActiveUsers }
+
+# Use input objects to generate tags and values for a Counter metric
+Get-Process |
+    Send-DataDogMetric -Name 'process.handles' -Type Counter -Value { $_.Handles } -Tag { @("process:$($_.ProcessName)","pid:$($_.Id)") }
 ```
 
 ## Documentation
